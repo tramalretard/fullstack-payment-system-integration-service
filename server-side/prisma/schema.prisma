@@ -19,3 +19,22 @@ model User {
 
   @@map("users")
 }
+
+model Plan {
+  id String @id @default(cuid())
+
+  title       String
+  description String
+
+  features String[]
+
+  monthlyPrice Int @map("monthly_price")
+  yearlyPrice  Int @map("yearly_price")
+
+  isPopular Boolean @default(false) @map("is_popular")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("plans")
+}
