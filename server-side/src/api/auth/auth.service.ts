@@ -12,7 +12,7 @@ import { Request, Response } from 'express'
 import { isDev, ms, StringValue } from 'src/common/utils'
 import { PrismaService } from 'src/infra/prisma/prisma.service'
 
-import { LoginDto, RegisterDto } from './dto'
+import { LoginRequest, RegisterRequest } from './dto'
 import { JwtPayload } from './interfaces'
 
 @Injectable()
@@ -37,7 +37,7 @@ export class AuthService {
 		this.COOKIES_DOMAIN = configService.getOrThrow<string>('COOKIES_DOMAIN')
 	}
 
-	async register(res: Response, dto: RegisterDto) {
+	async register(res: Response, dto: RegisterRequest) {
 		const { name, password, email } = dto
 
 		const isExists = await this.prismaService.user.findUnique({
@@ -64,7 +64,7 @@ export class AuthService {
 		return this.auth(res, user)
 	}
 
-	async login(res: Response, dto: LoginDto) {
+	async login(res: Response, dto: LoginRequest) {
 		const { email, password } = dto
 
 		const user = await this.prismaService.user.findUnique({
