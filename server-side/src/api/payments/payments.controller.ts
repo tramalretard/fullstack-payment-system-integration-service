@@ -1,9 +1,9 @@
-import { Controller, Get } from '@nestjs/common'
+import { Body, Controller, Get, Post } from '@nestjs/common'
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import type { User } from '@prisma/client'
 import { Authorized, Protected } from 'src/common/decorators'
 
-import { PaymentHistoryResponse } from './dto'
+import { InitPaymentRequest, PaymentHistoryResponse } from './dto'
 import { PaymentsService } from './payments.service'
 
 @ApiTags('Payments')
@@ -22,5 +22,11 @@ export class PaymentsController {
 	@Get()
 	async getHistory(@Authorized() user: User) {
 		return await this.paymentsService.getHistory(user)
+	}
+
+	@Protected()
+	@Post()
+	async init(@Body() dto: InitPaymentRequest, @Authorized() user: User) {
+		return await this.paymentsService.init(dto, user)
 	}
 }

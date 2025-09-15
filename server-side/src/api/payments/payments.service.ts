@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common'
-import type { User } from '@prisma/client'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { BillingPeriod, type User } from '@prisma/client'
 import { PrismaService } from 'src/infra/prisma/prisma.service'
+
+import { InitPaymentRequest } from './dto'
 
 @Injectable()
 export class PaymentsService {
@@ -33,5 +35,51 @@ export class PaymentsService {
 		}))
 
 		return formatted
+	}
+
+	async init(dto: InitPaymentRequest, user: User) {
+		const { planId, billingPeriod, provider } = dto
+
+		const plan = await this.prismaService.plan.findUnique({
+			where: {
+				id: planId
+			}
+		})
+
+		if (!plan) throw new NotFoundException('Данный план не найден')
+
+		const amount =
+			billingPeriod === BillingPeriod.MONTHLY
+				? plan.monthlyPrice
+				: plan.yearlyPrice
+
+		const transaction = await this.prismaService.transaction.create({
+			data: {
+				amount: amount,
+				provider,
+				billingPeriod,
+				user: {
+					connect: {
+						id: user.id
+					}
+				},
+				subscription: {
+					create: {
+						user: {
+							connect: {
+								id: user.id
+							}
+						},
+						plan: {
+							connect: {
+								id: plan.id
+							}
+						}
+					}
+				}
+			}
+		})
+
+		return transaction
 	}
 }
