@@ -30,4 +30,10 @@ export class WebhooksController {
 	) {
 		return await this.webhooksService.handleStripe(req.rawBody, sig)
 	}
+
+	@Post('cryptopay')
+	@HttpCode(HttpStatus.OK)
+	async handleCryptopay(@Body() dto: any) {
+		return dto
+	}
 }
