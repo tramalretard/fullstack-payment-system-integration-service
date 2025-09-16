@@ -13,7 +13,9 @@ export const plans: Omit<Plan, 'id' | 'createdAt' | 'updatedAt'>[] = [
 		],
 		isPopular: false,
 		monthlyPrice: 599,
-		yearlyPrice: 5750
+		yearlyPrice: 5750,
+		stripeMonthlyPriceId: 'price_1S7nKpCxyVB5RQvs6pf4Wh46',
+		stripeYearlyPriceId: 'price_1S7nKpCxyVB5RQvshswRSk8e'
 	},
 	{
 		title: 'Премиум',
@@ -28,7 +30,9 @@ export const plans: Omit<Plan, 'id' | 'createdAt' | 'updatedAt'>[] = [
 		],
 		isPopular: true,
 		monthlyPrice: 1899,
-		yearlyPrice: 18230
+		yearlyPrice: 18230,
+		stripeMonthlyPriceId: 'price_1S7nM8CxyVB5RQvs460BB66a',
+		stripeYearlyPriceId: 'price_1S7nM8CxyVB5RQvsctEQqw6C'
 	},
 	{
 		title: 'Ультра',
@@ -44,6 +48,8 @@ export const plans: Omit<Plan, 'id' | 'createdAt' | 'updatedAt'>[] = [
 		],
 		isPopular: false,
 		monthlyPrice: 3999,
-		yearlyPrice: 38390
+		yearlyPrice: 38390,
+		stripeMonthlyPriceId: 'price_1S7nMuCxyVB5RQvsvGIgH7gB',
+		stripeYearlyPriceId: 'price_1S7nMuCxyVB5RQvsaoCZwv4H'
 	}
 ]

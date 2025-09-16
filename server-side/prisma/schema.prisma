@@ -36,6 +36,9 @@ model Plan {
 
   subscription UserSubscription[]
 
+  stripeMonthlyPriceId String @map("stripe_monthly_price_id")
+  stripeYearlyPriceId  String @map("stripe_yearly_price_id")
+
   isPopular Boolean @default(false) @map("is_popular")
 
   createdAt DateTime @default(now()) @map("created_at")

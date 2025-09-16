@@ -36,10 +36,4 @@ export class PaymentsController {
 	async init(@Body() dto: InitPaymentRequest, @Authorized() user: User) {
 		return await this.paymentsService.init(dto, user)
 	}
-
-	@Post('/webhook')
-	@HttpCode(HttpStatus.OK)
-	async webhook(@Body() dto: any) {
-		return dto
-	}
 }

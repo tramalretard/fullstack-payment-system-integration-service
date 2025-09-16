@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { BillingPeriod, Plan, Transaction } from '@prisma/client'
+import { BillingPeriod, type Plan, type Transaction } from '@prisma/client'
 import {
 	ConfirmationEnum,
 	CurrencyEnum,
