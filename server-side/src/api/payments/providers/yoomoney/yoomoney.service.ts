@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { type Plan, type Transaction } from '@prisma/client'
+import CIDR from 'ip-cidr'
 import {
 	ConfirmationEnum,
 	CurrencyEnum,
@@ -9,6 +10,8 @@ import {
 
 @Injectable()
 export class YoomoneyService {
+	private readonly ALLOWED_IPS: string[]
+
 	constructor(private readonly yookassaService: YookassaService) {}
 
 	async create(plan: Plan, transaction: Transaction) {
@@ -29,5 +32,17 @@ export class YoomoneyService {
 		})
 
 		return payment
+	}
+
+	verifyWebhook(ip: string) {
+		for (const range of this.ALLOWED_IPS) {
+			if (range.includes('/')) {
+				const cidr = new CIDR(range)
+
+				if (cidr.contains(ip)) return
+			} else if (ip === range) return
+		}
+
+		throw new BadRequestException(`IP-адрес не валиден: ${ip}`)
 	}
 }

@@ -5,12 +5,14 @@ import {
 	Headers,
 	HttpCode,
 	HttpStatus,
+	Ip,
 	Post,
 	type RawBodyRequest,
 	Req
 } from '@nestjs/common'
 import type { Request } from 'express'
 
+import { YookassaWebhooksDto } from './dto/yookassa-webhooks.dto'
 import { WebhooksService } from './webhooks.service'
 
 @Controller('webhooks')
@@ -19,8 +21,8 @@ export class WebhooksController {
 
 	@Post('yookassa')
 	@HttpCode(HttpStatus.OK)
-	async handleYookassa(@Body() dto: any) {
-		return dto
+	async handleYookassa(@Body() dto: YookassaWebhooksDto, @Ip() ip: string) {
+		return this.webhooksService.handleYookassa(dto, ip)
 	}
 
 	@Post('stripe')
