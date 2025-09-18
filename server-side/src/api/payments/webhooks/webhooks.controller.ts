@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Headers,
@@ -28,12 +29,19 @@ export class WebhooksController {
 		@Req() req: RawBodyRequest<Request>,
 		@Headers('stripe-signature') sig: string
 	) {
-		return await this.webhooksService.handleStripe(req.rawBody, sig)
+		if (!sig) throw new BadRequestException('Подпись токена отсутствует')
+
+		return await this.webhooksService.handleStripe(req.rawBody!, sig)
 	}
 
 	@Post('cryptopay')
 	@HttpCode(HttpStatus.OK)
-	async handleCryptopay(@Body() dto: any) {
-		return dto
+	async handleCryptopay(
+		@Req() req: RawBodyRequest<Request>,
+		@Headers('crypto-pay-api-signature') sig: string
+	) {
+		if (!sig) throw new BadRequestException('Подпись токена отсутствует')
+
+		return await this.webhooksService.handleCryptopay(req.rawBody!, sig)
 	}
 }

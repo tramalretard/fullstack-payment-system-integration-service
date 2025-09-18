@@ -1,7 +1,8 @@
 import { HttpService } from '@nestjs/axios'
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { type Plan, type Transaction } from '@prisma/client'
+import { createHash, createHmac } from 'crypto'
 import { firstValueFrom } from 'rxjs'
 
 import { CRYPTOPAY_API_URL } from '../../constants'
@@ -44,6 +45,27 @@ export class CryptopayService {
 		)
 
 		return response.result
+	}
+
+	verifyWebhook(rawBody: Buffer, sig: string) {
+		const secret = createHash('sha256')
+			.update(this.CRYPTOPAY_TOKEN)
+			.digest()
+
+		const hmac = createHmac('sha256', secret).update(rawBody).digest('hex')
+
+		if (hmac != sig)
+			throw new BadRequestException('Подпись токена не валидна')
+
+		return true
+	}
+
+	isFreshReq(body: any, maxSeconds: number = 300) {
+		const request = new Date(body.request_date).getTime()
+
+		const now = Date.now()
+
+		return now - request <= maxSeconds * 1000
 	}
 
 	private async makeRequest<T>(
