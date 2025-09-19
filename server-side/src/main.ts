@@ -34,9 +34,9 @@ async function bootstrap() {
 	try {
 		await app.listen(port)
 
-		logger.log(`The server is running on: ${host}`)
+		logger.log(`Сервер успешно запущен на: ${host}`)
 	} catch (error) {
-		logger.error(`The server failed to start: ${error.message}`, error)
+		logger.error(`Не удалось запустить сервер: ${error.message}`, error)
 		process.exit(1)
 	}
 }

@@ -1,6 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { SubscriptionStatus, TransactionStatus } from '@prisma/client'
 import { PrismaService } from 'src/infra/prisma/prisma.service'
+import { MailService } from 'src/libs/mail/mail.service'
 
 import { PaymentsWebhooksResult } from './interfaces'
 
@@ -8,7 +9,10 @@ import { PaymentsWebhooksResult } from './interfaces'
 export class PaymentsHandler {
 	private readonly logger = new Logger(PaymentsHandler.name)
 
-	constructor(private readonly prismaService: PrismaService) {}
+	constructor(
+		private readonly prismaService: PrismaService,
+		private readonly mailService: MailService
+	) {}
 
 	async processResult(result: PaymentsWebhooksResult) {
 		const { transactionId, paymentId, planId, status, raw } = result
@@ -101,6 +105,11 @@ export class PaymentsHandler {
 				}
 			})
 
+			await this.mailService.sendPaymentSuccessMail(
+				subscription.user,
+				transaction
+			)
+
 			this.logger.log(
 				`✅ Тарифный план успешно активирован для пользователя ${subscription.user.email}`
 			)
@@ -113,6 +122,11 @@ export class PaymentsHandler {
 					status: SubscriptionStatus.EXPIRED
 				}
 			})
+
+			await this.mailService.sendPaymentFailedMail(
+				subscription.user,
+				transaction
+			)
 
 			this.logger.error(
 				`❌ Ошибка при активации тарифного плана для пользователя ${subscription.user.email}`
