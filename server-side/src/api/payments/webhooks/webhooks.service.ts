@@ -17,10 +17,14 @@ export class WebhooksService {
 
 	async handleYookassa(dto: YookassaWebhooksDto, ip: string) {
 		this.yoomoneyService.verifyWebhook(ip)
+
+		const result = this.yoomoneyService.handleWebhook(dto)
 	}
 
 	async handleStripe(rawBody: Buffer, sig: string) {
 		const event = await this.stripeService.parseEvent(rawBody, sig)
+
+		const result = await this.stripeService.handleWebhook(event)
 	}
 
 	async handleCryptopay(rawBody: Buffer, sig: string) {
@@ -30,5 +34,7 @@ export class WebhooksService {
 
 		if (!this.cryptoService.isFreshReq(body))
 			throw new BadRequestException('Запрос устарел')
+
+		const result = await this.cryptoService.handleWebhook(body)
 	}
 }

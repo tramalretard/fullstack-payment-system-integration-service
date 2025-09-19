@@ -1,17 +1,20 @@
 import { HttpService } from '@nestjs/axios'
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { type Plan, type Transaction } from '@prisma/client'
+import { type Plan, type Transaction, TransactionStatus } from '@prisma/client'
 import { createHash, createHmac } from 'crypto'
 import { firstValueFrom } from 'rxjs'
 
 import { CRYPTOPAY_API_URL } from '../../constants'
+import { PaymentsWebhooksResult } from '../../interfaces'
+import { CryptopayWebhooksDto } from '../../webhooks/dto'
 
 import {
 	CreateInvoiceRequest,
 	CryptoResponse,
 	Currency,
 	FiatCurrency,
+	InvoiceStatus,
 	PaidButtonName
 } from './interfaces'
 
@@ -35,7 +38,13 @@ export class CryptopayService {
 			description: `Оплата тарифного плана "${plan.title}"`,
 			hidden_message: 'Тарифный план активирован. Благодарим за оплату!',
 			paid_btn_name: PaidButtonName.CALLBACK,
-			paid_btn_url: 'https://localhost:3000'
+			paid_btn_url: 'https://localhost:3000',
+			payload: Buffer.from(
+				JSON.stringify({
+					transactionId: transaction.id,
+					planId: plan.id
+				})
+			).toString('base64url')
 		}
 
 		const response = await this.makeRequest<CreateInvoiceRequest>(
@@ -45,6 +54,39 @@ export class CryptopayService {
 		)
 
 		return response.result
+	}
+
+	async handleWebhook(
+		dto: CryptopayWebhooksDto
+	): Promise<PaymentsWebhooksResult> {
+		const payload = JSON.parse(
+			Buffer.from(dto.payload.payload ?? '', 'base64url').toString(
+				'utf-8'
+			)
+		)
+
+		const transactionId = payload.transactionId
+		const planId = payload.planId
+		const paymentId = dto.payload.invoice_id.toString()
+
+		let status: TransactionStatus = TransactionStatus.PENDING
+
+		switch (dto.payload.status) {
+			case InvoiceStatus.PAID:
+				status = TransactionStatus.SUCCEEDED
+				break
+			case InvoiceStatus.EXPIRED:
+				status = TransactionStatus.FAILED
+				break
+		}
+
+		return {
+			transactionId,
+			planId,
+			paymentId,
+			status,
+			raw: dto
+		}
 	}
 
 	verifyWebhook(rawBody: Buffer, sig: string) {
