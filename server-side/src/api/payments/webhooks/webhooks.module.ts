@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 
+import { PaymentsHandler } from '../payments.handler'
 import { CryptopayModule } from '../providers/cryptopay/cryptopay.module'
 import { StripeModule } from '../providers/stripe/stripe.module'
 
@@ -10,6 +11,7 @@ import { WebhooksService } from './webhooks.service'
 @Module({
 	imports: [YoomoneyModule, StripeModule, CryptopayModule],
 	controllers: [WebhooksController],
-	providers: [WebhooksService]
+	providers: [WebhooksService, PaymentsHandler]
 })
 export class WebhooksModule {}
+``

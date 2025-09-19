@@ -14,27 +14,30 @@ export class PrismaService
 	private readonly logger = new Logger(PrismaService.name)
 
 	async onModuleInit() {
-		this.logger.log('Initializing a connection to a database... ⏳')
+		this.logger.log('Инициализация соединения с базой данных... ⏳')
 
 		try {
 			await this.$connect()
 
-			this.logger.log('Successful connection to the database ✅')
+			this.logger.log('Успешное подключение к базе данных ✅')
 		} catch (error) {
-			this.logger.error('❌ Failed to connect to the database: ', error)
+			this.logger.error('❌ Ошибка при подключении к базе данных: ', error)
 			throw error
 		}
 	}
 
 	async onModuleDestroy() {
-		this.logger.log('Closing the database connection... ⏳')
+		this.logger.log('Закрытие соединения с базой данных... ⏳')
 
 		try {
 			await this.$disconnect()
 
-			this.logger.log('Successfully closed the database connection ✅')
+			this.logger.log('Успешное закрытие соединения с базой данных ✅')
 		} catch (error) {
-			this.logger.error('❌ Error closing database connection: ', error)
+			this.logger.error(
+				'❌ Ошибка при закрытии соединения с базой данных: ',
+				error
+			)
 			throw error
 		}
 	}

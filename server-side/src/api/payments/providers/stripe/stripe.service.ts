@@ -119,7 +119,7 @@ export class StripeService {
 			)
 		} catch (error) {
 			throw new BadRequestException(
-				`Ошибка при верификации SECRET_KEY Stripe: ${error}`
+				`Ошибка при верификации секретного ключа Stripe: ${error}`
 			)
 		}
 	}

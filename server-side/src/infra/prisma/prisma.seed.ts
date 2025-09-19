@@ -10,7 +10,7 @@ async function main() {
 	const logger = new Logger(PrismaService.name)
 
 	try {
-		logger.log('Seeding database')
+		logger.log('Запуск сидирования базы данных... ⏳')
 
 		await prisma.plan.deleteMany()
 
@@ -18,9 +18,9 @@ async function main() {
 			data: plans
 		})
 
-		logger.log('Seeding finished')
+		logger.log('Успешное сидирование базы данных ✅')
 	} catch (error) {
-		logger.error('Failed to seed the database', error)
+		logger.error('❌ Ошибка при сидировании базы данных:', error)
 	}
 }
 
