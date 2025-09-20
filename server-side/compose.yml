@@ -14,8 +14,21 @@ services:
             - postgres_data:/var/lib/postgresql/data
         networks:
             - payment-systems
+
+    redis:
+        container_name: redis
+        image: redis:5.0
+        restart: always
+        command: redis-server --requirepass ${REDIS_PASSWORD}
+        ports:
+            - 6379:6379
+        volumes:
+            - redis_data:/data
+        networks:
+            - payment-systems
 volumes:
     postgres_data:
+    redis_data:
 
 networks:
     payment-systems:

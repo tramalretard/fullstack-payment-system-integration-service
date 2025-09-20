@@ -1,7 +1,9 @@
 import { type ISendMailOptions, MailerService } from '@nestjs-modules/mailer'
+import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable, Logger } from '@nestjs/common'
 import type { Transaction, User } from '@prisma/client'
 import { render } from '@react-email/components'
+import { Queue } from 'bullmq'
 
 import { PaymentFailedTemplate, PaymentSuccessTemplate } from './templates'
 
@@ -9,29 +11,40 @@ import { PaymentFailedTemplate, PaymentSuccessTemplate } from './templates'
 export class MailService {
 	private readonly logger = new Logger(MailService.name)
 
-	constructor(private readonly mailerService: MailerService) {}
+	constructor(
+		private readonly mailerService: MailerService,
+		@InjectQueue('mail') private readonly queue: Queue
+	) {}
 
 	async sendPaymentSuccessMail(user: User, transaction: Transaction) {
 		const html = await render(PaymentSuccessTemplate({ transaction }))
 
-		await this.mailerService.sendMail({
-			to: user.email,
-			subject: 'Платеж выполнен успешно!',
-			html
-		})
+		await this.queue.add(
+			'Отправить-письмо',
+			{
+				email: user.email,
+				subject: 'Платеж выполнен успешно!',
+				html
+			},
+			{ removeOnComplete: true }
+		)
 	}
 
 	async sendPaymentFailedMail(user: User, transaction: Transaction) {
 		const html = await render(PaymentFailedTemplate({ transaction }))
 
-		await this.mailerService.sendMail({
-			to: user.email,
-			subject: 'Ошибка при обработке платежа!',
-			html
-		})
+		await this.queue.add(
+			'Отправить-письмо',
+			{
+				email: user.email,
+				subject: 'Ошибка при обработке платежа!',
+				html
+			},
+			{ removeOnComplete: true }
+		)
 	}
 
-	private async sendMail(options: ISendMailOptions) {
+	async sendMail(options: ISendMailOptions) {
 		try {
 			await this.mailerService.sendMail(options)
 		} catch (error) {
