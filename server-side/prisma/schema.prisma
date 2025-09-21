@@ -15,6 +15,8 @@ model User {
   password      String
   isAutoRenewal Boolean @default(true) @map("is_auto_renewal")
 
+  stripeCustomerId String? @unique @map("stripe_customer_id")
+
   transactions Transaction[]
   subscription UserSubscription?
 

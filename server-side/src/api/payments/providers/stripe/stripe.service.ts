@@ -2,11 +2,13 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import {
 	BillingPeriod,
+	PaymentProvider,
 	type Plan,
 	type Transaction,
 	TransactionStatus,
 	type User
 } from '@prisma/client'
+import { PrismaService } from 'src/infra/prisma/prisma.service'
 import Stripe from 'stripe'
 
 import { PaymentsWebhooksResult } from '../../interfaces'
@@ -17,7 +19,10 @@ export class StripeService {
 
 	private readonly STRIPE_WEBHOOK_SECRET: string
 
-	constructor(private readonly configService: ConfigService) {
+	constructor(
+		private readonly prismaService: PrismaService,
+		private readonly configService: ConfigService
+	) {
 		this.stripe = new Stripe(
 			this.configService.getOrThrow<string>('STRIPE_SECRET_KEY'),
 			{
@@ -41,14 +46,37 @@ export class StripeService {
 				? plan.stripeMonthlyPriceId
 				: plan.stripeYearlyPriceId
 
-		if (!amount) throw new BadRequestException('ID Stipe плана не найден')
+		if (!amount)
+			throw new BadRequestException(
+				'Идентификатор тарифного плана в STRIPE не найден'
+			)
 
 		const successUrl = 'https://localhost:3000'
 		const cancelUrl = this.configService.getOrThrow<string>('CLIENT_URL')
 
+		let customerId = user.stripeCustomerId
+
+		if (!customerId) {
+			const customer = await this.stripe.customers.create({
+				email: user.email,
+				name: user.name
+			})
+
+			customerId = customer.id
+
+			await this.prismaService.user.update({
+				where: {
+					id: user.id
+				},
+				data: {
+					stripeCustomerId: customerId
+				}
+			})
+		}
+
 		const session = await this.stripe.checkout.sessions.create({
 			payment_method_types: ['card'],
-			customer_email: user.email,
+			customer: customerId,
 			line_items: [{ price: amount, quantity: 1 }],
 			mode: 'subscription',
 			success_url: successUrl,
@@ -84,21 +112,43 @@ export class StripeService {
 				}
 			}
 
+			case 'invoice.payment_succeeded': {
+				const payment = event.data.object as Stripe.Invoice
+
+				if (payment.billing_reason !== 'subscription_cycle') return null
+
+				return await this.handleAutoBilling(
+					payment.customer as string,
+					TransactionStatus.SUCCEEDED,
+					payment.id ?? '',
+					event
+				)
+			}
+
 			case 'invoice.payment_failed': {
 				const payment = event.data.object as Stripe.Invoice
 
-				const transactionId = payment.metadata?.transactionId
-				const planId = payment.metadata?.planId
-				const paymentId = payment.id
+				if (payment.billing_reason === 'subscription_cycle') {
+					return await this.handleAutoBilling(
+						payment.customer as string,
+						TransactionStatus.FAILED,
+						payment.id ?? '',
+						event
+					)
+				} else {
+					const transactionId = payment.metadata?.transactionId
+					const planId = payment.metadata?.planId
+					const paymentId = payment.id
 
-				if (!transactionId || !planId || !paymentId) return null
+					if (!transactionId || !planId || !paymentId) return null
 
-				return {
-					transactionId,
-					planId,
-					paymentId,
-					status: TransactionStatus.FAILED,
-					raw: event
+					return {
+						transactionId,
+						planId,
+						paymentId,
+						status: TransactionStatus.FAILED,
+						raw: event
+					}
 				}
 			}
 
@@ -121,6 +171,77 @@ export class StripeService {
 			throw new BadRequestException(
 				`Ошибка при верификации секретного ключа Stripe: ${error}`
 			)
+		}
+	}
+
+	private async handleAutoBilling(
+		customerId: string,
+		status: TransactionStatus,
+		externalId: string,
+		event: Stripe.Event
+	) {
+		const user = await this.prismaService.user.findUnique({
+			where: {
+				stripeCustomerId: customerId
+			},
+			include: {
+				subscription: true,
+				transactions: {
+					where: {
+						status: TransactionStatus.SUCCEEDED
+					},
+					orderBy: {
+						createdAt: 'desc'
+					},
+					take: 1
+				}
+			}
+		})
+
+		if (!user || !user.subscription) return null
+
+		const lastTransaction = user.transactions[0]
+
+		if (!lastTransaction || !lastTransaction.subscriptionId) return null
+
+		const subscription =
+			await this.prismaService.userSubscription.findUnique({
+				where: {
+					id: lastTransaction.subscriptionId
+				},
+				include: {
+					plan: true
+				}
+			})
+
+		if (!subscription) return null
+
+		const transaction = await this.prismaService.transaction.create({
+			data: {
+				amount: lastTransaction.amount,
+				provider: PaymentProvider.STRIPE,
+				billingPeriod: lastTransaction.billingPeriod,
+				status,
+				externalId,
+				user: {
+					connect: {
+						id: user.id
+					}
+				},
+				subscription: {
+					connect: {
+						id: subscription.id
+					}
+				}
+			}
+		})
+
+		return {
+			transactionId: transaction.id,
+			planId: subscription.plan.id,
+			paymentId: externalId,
+			status,
+			raw: event
 		}
 	}
 }
