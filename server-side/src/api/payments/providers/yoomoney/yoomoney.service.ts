@@ -1,5 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { type Plan, type Transaction, TransactionStatus } from '@prisma/client'
+import {
+	type Plan,
+	type Transaction,
+	TransactionStatus,
+	type User
+} from '@prisma/client'
 import CIDR from 'ip-cidr'
 import {
 	ConfirmationEnum,
@@ -7,6 +12,7 @@ import {
 	PaymentMethodsEnum,
 	YookassaService
 } from 'nestjs-yookassa'
+import { VatCodesEnum } from 'nestjs-yookassa/dist/interfaces/receipt-details.interface'
 
 import type { PaymentsWebhooksResult } from '../../interfaces'
 import { YookassaWebhooksDto } from '../../webhooks/dto/yookassa-webhooks.dto'
@@ -43,6 +49,41 @@ export class YoomoneyService {
 			},
 			save_payment_method: true,
 			metadata: { transactionId: transaction.id, planId: plan.id }
+		})
+
+		return payment
+	}
+
+	async createBySavedCard(plan: Plan, user: User, transaction: Transaction) {
+		const payment = await this.yookassaService.createPayment({
+			amount: {
+				value: transaction.amount,
+				currency: CurrencyEnum.RUB
+			},
+			description: `Автосписание средств за тарифный план "${plan.title}"`,
+			receipt: {
+				customer: {
+					email: user.email
+				},
+				items: [
+					{
+						description: `Автосписание средств за тарифный план "${plan.title}"`,
+						quantity: 1,
+						amount: {
+							value: transaction.amount,
+							currency: CurrencyEnum.RUB
+						},
+						vat_code: VatCodesEnum.ndsNone
+					}
+				]
+			},
+			payment_method_id: transaction.externalId ?? '',
+			capture: true,
+			save_payment_method: true,
+			metadata: {
+				transactionId: transaction.id,
+				planId: plan.id
+			}
 		})
 
 		return payment

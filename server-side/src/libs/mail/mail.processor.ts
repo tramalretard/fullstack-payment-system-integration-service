@@ -19,7 +19,7 @@ export class MailProcessor extends WorkerHost {
 		try {
 			await this.mailService.sendMail({ to: email, subject, html })
 
-			this.logger.log(`✅ Письмо успешно отправлено на почту ${email}`)
+			this.logger.log(`Письмо успешно отправлено на почту ${email} ✅ `)
 		} catch (error) {
 			this.logger.error(
 				`❌ Ошибка при отправке письма на почту ${email}: ${error.message}`

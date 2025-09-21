@@ -6,11 +6,18 @@ import { CryptopayModule } from './providers/cryptopay/cryptopay.module'
 import { StripeModule } from './providers/stripe/stripe.module'
 import { YoomoneyModule } from './providers/yoomoney/yoomoney.module'
 import { YoomoneyService } from './providers/yoomoney/yoomoney.service'
+import { SchedulerModule } from './scheduler/scheduler.module'
 import { WebhooksModule } from './webhooks/webhooks.module'
 
 @Module({
 	controllers: [PaymentsController],
 	providers: [PaymentsService, YoomoneyService],
-	imports: [WebhooksModule, StripeModule, YoomoneyModule, CryptopayModule]
+	imports: [
+		WebhooksModule,
+		StripeModule,
+		YoomoneyModule,
+		CryptopayModule,
+		SchedulerModule
+	]
 })
 export class PaymentsModule {}

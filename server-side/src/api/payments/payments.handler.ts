@@ -38,7 +38,7 @@ export class PaymentsHandler {
 			status !== TransactionStatus.SUCCEEDED
 		) {
 			this.logger.warn(
-				`Attempted to update a SUCCEEDED transaction ${transactionId} to ${status}. Ignoring`
+				`Попытка обновить SUCEEDEED транзакцию ${transactionId} до ${status}. Проигнарировано`
 			)
 			return { ok: true }
 		}
@@ -111,7 +111,7 @@ export class PaymentsHandler {
 			)
 
 			this.logger.log(
-				`✅ Тарифный план успешно активирован для пользователя ${subscription.user.email}`
+				`Тарифный план "${subscription.plan.title}" успешно активирован для пользователя ${subscription.user.email} ✅`
 			)
 		} else if (status === TransactionStatus.FAILED) {
 			await this.prismaService.userSubscription.update({
@@ -129,7 +129,7 @@ export class PaymentsHandler {
 			)
 
 			this.logger.error(
-				`❌ Ошибка при активации тарифного плана для пользователя ${subscription.user.email}`
+				`❌ Ошибка при активации тарифного плана "${subscription.plan.title}" для пользователя ${subscription.user.email}`
 			)
 		}
 
