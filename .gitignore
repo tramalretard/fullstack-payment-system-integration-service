@@ -1,15 +1,12 @@
-# compiled output server
 /server-side/dist
 /server-side/node_modules
 /server-side/build
 /server-side/generated/prisma
 
-# compiled output client
 /client-side/dist
 /client-side/node_modules
 /client-side/build
 
-# Logs server
 /server-side/logs
 /server-side/*.log
 /server-side/npm-debug.log*
@@ -17,7 +14,6 @@
 /server-side/yarn-error.log*
 /server-side/lerna-debug.log*
 
-# Logs client
 /client-side/logs
 /client-side/*.log
 /client-side/npm-debug.log*
@@ -25,17 +21,13 @@
 /client-side/yarn-error.log*
 /client-side/lerna-debug.log*
 
-# OS server
 /server-side/.DS_Store
 
-# OS client
-/server-side/.DS_Store
+/client-side/.DS_Store
 
-# Tests
 /server-side/coverage
 /server-side/.nyc_output
 
-# IDEs and editors server
 server-side/.idea
 server-side/.project
 server-side/.classpath
@@ -44,7 +36,6 @@ server-side/*.launch
 server-side/.settings/
 server-side/*.sublime-workspace
 
-# IDEs and editors client
 client-side/.idea
 client-side/.project
 client-side/.classpath
@@ -53,37 +44,31 @@ client-side/*.launch
 client-side/.settings/
 client-side/*.sublime-workspace
 
-# IDE - VSCode server
 server-side/.vscode/*
 server-side/!.vscode/settings.json
 server-side/!.vscode/tasks.json
 server-side/!.vscode/launch.json
 server-side/!.vscode/extensions.json
 
-# IDE - VSCode client
 client-side/.vscode/*
 client-side/!.vscode/settings.json
 client-side/!.vscode/tasks.json
 client-side/!.vscode/launch.json
 client-side/!.vscode/extensions.json
 
-# dotenv environment variable files server
 server-side/.env
 server-side/.env.development.local
 server-side/.env.test.local
 server-side/.env.production.local
 server-side/.env.local
 
-# temp directory server
 server-side/.temp
 server-side/.tmp
 
-# Runtime data server
 server-side/pids
 server-side/*.pid
 server-side/*.seed
 server-side/*.pid.lock
 server-side/uploads
 
-# Diagnostic reports (https://nodejs.org/api/report.html) server
 server-side/report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
