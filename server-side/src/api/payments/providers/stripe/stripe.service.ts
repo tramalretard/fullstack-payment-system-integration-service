@@ -83,7 +83,8 @@ export class StripeService {
 			cancel_url: cancelUrl,
 			metadata: {
 				transactionId: transaction.id,
-				planId: plan.id
+				planId: plan.id,
+				userId: user.id
 			}
 		})
 
@@ -95,13 +96,30 @@ export class StripeService {
 	): Promise<PaymentsWebhooksResult | null> {
 		switch (event.type) {
 			case 'checkout.session.completed': {
-				const payment = event.data.object as Stripe.Checkout.Session
+				const session = await this.stripe.checkout.sessions.retrieve(
+					event.data.object.id,
+					{ expand: ['line_items'] }
+				)
 
-				const transactionId = payment.metadata?.transactionId
-				const planId = payment.metadata?.planId
-				const paymentId = payment.id
+				const transactionId = session.metadata?.transactionId
+				const planId = session.metadata?.planId
+				const userId = session.metadata?.userId
+				const paymentId = session.id
 
 				if (!transactionId || !planId) return null
+
+				const stripeSubscriptionId = session.subscription as string
+
+				if (userId && stripeSubscriptionId) {
+					await this.prismaService.userSubscription.update({
+						where: {
+							userId
+						},
+						data: {
+							stripeSubscriptionId
+						}
+					})
+				}
 
 				return {
 					transactionId,
@@ -155,6 +173,12 @@ export class StripeService {
 			default:
 				return null
 		}
+	}
+
+	async updateAutoRenewal(subscriptionId: string, isAutoRenewal: boolean) {
+		await this.stripe.subscriptions.update(subscriptionId, {
+			cancel_at_period_end: !isAutoRenewal
+		})
 	}
 
 	async parseEvent(

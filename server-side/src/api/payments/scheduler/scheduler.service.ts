@@ -162,7 +162,7 @@ export class SchedulerService {
 
 		if (!filteredSubscriptions.length) {
 			this.logger.log(
-				'Пользователи для просроченных тарифных планов не найдены'
+				'Пользователи с просроченными тарифными планами не найдены'
 			)
 
 			return
