@@ -4,13 +4,19 @@ import {
 	Get,
 	HttpCode,
 	HttpStatus,
+	Param,
 	Post
 } from '@nestjs/common'
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import type { User } from '@prisma/client'
 import { Authorized, Protected } from 'src/common/decorators'
 
-import { InitPaymentRequest, PaymentHistoryResponse } from './dto'
+import {
+	InitPaymentRequest,
+	InitPaymentResponse,
+	PaymentDetailsResponse,
+	PaymentHistoryResponse
+} from './dto'
 import { PaymentsService } from './payments.service'
 
 @ApiTags('Payments')
@@ -31,6 +37,24 @@ export class PaymentsController {
 		return await this.paymentsService.getHistory(user)
 	}
 
+	@ApiOperation({
+		summary: 'Get payment by ID',
+		description: 'Returns transaction information by ID'
+	})
+	@ApiOkResponse({
+		type: PaymentDetailsResponse
+	})
+	async getById(@Param('id') id: string) {
+		return await this.paymentsService.getById(id)
+	}
+
+	@ApiOperation({
+		summary: 'Initialize a new payment',
+		description: 'Initialize a new payment with the selected provider'
+	})
+	@ApiOkResponse({
+		type: InitPaymentResponse
+	})
 	@Protected()
 	@Post('init')
 	async init(@Body() dto: InitPaymentRequest, @Authorized() user: User) {

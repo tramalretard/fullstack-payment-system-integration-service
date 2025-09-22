@@ -20,17 +20,22 @@ import {
 
 @Injectable()
 export class CryptopayService {
+	private readonly CLIENT_URL: string
 	private readonly CRYPTOPAY_TOKEN: string
 
 	constructor(
 		private readonly configService: ConfigService,
 		private readonly httpService: HttpService
 	) {
+		this.CLIENT_URL = this.configService.getOrThrow<string>('CLIENT_URL')
+
 		this.CRYPTOPAY_TOKEN =
 			this.configService.getOrThrow<string>('CRYPTOPAY_TOKEN')
 	}
 
 	async create(plan: Plan, transaction: Transaction) {
+		const successUrl = `${this.CLIENT_URL}/payments/${transaction.id}`
+
 		const payload: CreateInvoiceRequest = {
 			amount: transaction.amount,
 			currency_type: Currency.FIAT,
@@ -38,7 +43,7 @@ export class CryptopayService {
 			description: `Оплата тарифного плана "${plan.title}"`,
 			hidden_message: 'Тарифный план активирован. Благодарим за оплату!',
 			paid_btn_name: PaidButtonName.CALLBACK,
-			paid_btn_url: 'https://localhost:3000',
+			paid_btn_url: successUrl,
 			payload: Buffer.from(
 				JSON.stringify({
 					transactionId: transaction.id,

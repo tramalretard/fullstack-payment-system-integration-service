@@ -19,6 +19,8 @@ export class StripeService {
 
 	private readonly STRIPE_WEBHOOK_SECRET: string
 
+	private readonly CLIENT_URL: string
+
 	constructor(
 		private readonly prismaService: PrismaService,
 		private readonly configService: ConfigService
@@ -51,8 +53,8 @@ export class StripeService {
 				'Идентификатор тарифного плана в STRIPE не найден'
 			)
 
-		const successUrl = 'https://localhost:3000'
-		const cancelUrl = this.configService.getOrThrow<string>('CLIENT_URL')
+		const successUrl = `${this.CLIENT_URL}/payments/${transaction.id}`
+		const cancelUrl = `${this.CLIENT_URL}`
 
 		let customerId = user.stripeCustomerId
 

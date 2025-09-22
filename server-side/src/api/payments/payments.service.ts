@@ -45,6 +45,34 @@ export class PaymentsService {
 		return formatted
 	}
 
+	async getById(id: string) {
+		const transaction = await this.prismaService.transaction.findUnique({
+			where: {
+				id
+			},
+			select: {
+				id: true,
+				billingPeriod: true,
+				subscription: {
+					select: {
+						plan: {
+							select: {
+								id: true,
+								title: true,
+								monthlyPrice: true,
+								yearlyPrice: true
+							}
+						}
+					}
+				}
+			}
+		})
+
+		if (!transaction) throw new NotFoundException('Транзакция не найдена')
+
+		return transaction
+	}
+
 	async init(dto: InitPaymentRequest, user: User) {
 		const { planId, billingPeriod, provider } = dto
 
@@ -121,6 +149,11 @@ export class PaymentsService {
 			}
 		})
 
-		return payment
+		return {
+			url:
+				payment.url ||
+				payment.confirmation.confirmation_url ||
+				payment.mini_app_invoice_url
+		}
 	}
 }

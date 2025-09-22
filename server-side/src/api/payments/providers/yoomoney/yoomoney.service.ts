@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import {
 	type Plan,
 	type Transaction,
@@ -20,8 +21,14 @@ import { YookassaWebhooksDto } from '../../webhooks/dto/yookassa-webhooks.dto'
 @Injectable()
 export class YoomoneyService {
 	private readonly ALLOWED_IPS: string[]
+	private readonly CLIENT_URL: string
 
-	constructor(private readonly yookassaService: YookassaService) {
+	constructor(
+		private readonly yookassaService: YookassaService,
+		private readonly configService: ConfigService
+	) {
+		this.CLIENT_URL = this.configService.getOrThrow<string>('CLIENT_URL')
+
 		this.ALLOWED_IPS = [
 			'185.71.76.0/27',
 			'185.71.77.0/27',
@@ -34,6 +41,8 @@ export class YoomoneyService {
 	}
 
 	async create(plan: Plan, transaction: Transaction) {
+		const successUrl = `${this.CLIENT_URL}/payments/${transaction.id}`
+
 		const payment = await this.yookassaService.createPayment({
 			amount: {
 				value: transaction.amount,
@@ -45,7 +54,7 @@ export class YoomoneyService {
 			},
 			confirmation: {
 				type: ConfirmationEnum.redirect,
-				return_url: 'https://localhost:3000'
+				return_url: successUrl
 			},
 			save_payment_method: true,
 			metadata: { transactionId: transaction.id, planId: plan.id }
