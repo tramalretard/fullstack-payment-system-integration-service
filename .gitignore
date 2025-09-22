@@ -37,6 +37,7 @@ server-side/.settings/
 server-side/*.sublime-workspace
 
 client-side/.idea
+/client-side/.next
 client-side/.project
 client-side/.classpath
 client-side/.c9/
