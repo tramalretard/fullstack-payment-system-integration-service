@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
+import { ThemeProvider } from 'next-themes'
 import { Montserrat } from 'next/font/google'
+
+import { ButtonTheme } from '@/components/ui/button-theme'
 
 import './globals.css'
 
@@ -18,9 +21,17 @@ export default function RootLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<html lang='ru'>
+		<html lang='ru' suppressHydrationWarning>
 			<body className={`${montserrat.className} antialiased`}>
-				{children}
+				<ThemeProvider
+					attribute='class'
+					defaultTheme='system'
+					enableSystem
+					disableTransitionOnChange
+				>
+					{children}
+					<ButtonTheme className='fixed bottom-5 right-5 z-50' />
+				</ThemeProvider>
 			</body>
 		</html>
 	)
