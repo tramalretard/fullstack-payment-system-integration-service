@@ -1,4 +1,3 @@
-import { QueryClientProvider } from '@tanstack/react-query'
 import type { Metadata } from 'next'
 import { Montserrat } from 'next/font/google'
 
