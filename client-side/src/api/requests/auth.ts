@@ -1,10 +1,8 @@
-import type { LoginFormValues } from '@/components/auth/login-form'
-import type { RegisterFormValues } from '@/components/auth/register-form'
-
 import { api } from '../instance'
+import type { AuthResponse, LoginRequest, RegisterRequest } from '../types'
 
-export const register = async (data: RegisterFormValues) =>
-	await api.post('/auth/register', data).then(res => res.data)
+export const register = async (data: RegisterRequest) =>
+	await api.post<AuthResponse>('/auth/register', data).then(res => res.data)
 
-export const login = async (data: LoginFormValues) =>
-	await api.post('/auth/login', data).then(res => res.data)
+export const login = async (data: LoginRequest) =>
+	await api.post<AuthResponse>('/auth/login', data).then(res => res.data)
