@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Eye, EyeOff } from 'lucide-react'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
@@ -34,7 +35,13 @@ const loginSchema = z.object({
 export type LoginFormValues = z.infer<typeof loginSchema>
 
 export function LoginForm() {
-	const { mutate, isPending } = useLoginMutation()
+	const router = useRouter()
+
+	const { mutate, isPending } = useLoginMutation({
+		onSuccess() {
+			router.push('/dashboard')
+		}
+	})
 
 	const form = useForm<LoginFormValues>({
 		resolver: zodResolver(loginSchema),

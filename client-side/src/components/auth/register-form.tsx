@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Eye, EyeOff } from 'lucide-react'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
@@ -35,7 +36,13 @@ const registerSchema = z.object({
 export type RegisterFormValues = z.infer<typeof registerSchema>
 
 export function RegisterForm() {
-	const { mutate, isPending } = useRegisterMutation()
+	const router = useRouter()
+
+	const { mutate, isPending } = useRegisterMutation({
+		onSuccess() {
+			router.push('/dashboard')
+		}
+	})
 
 	const form = useForm<RegisterFormValues>({
 		resolver: zodResolver(registerSchema),
