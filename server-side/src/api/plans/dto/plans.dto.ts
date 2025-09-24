@@ -22,7 +22,8 @@ export class PlansResponse {
 	@ApiProperty({
 		example: ['Unlimited access', 'Priority support'],
 		description: 'Features available in the tariff plan',
-		isArray: true
+		isArray: true,
+		type: String
 	})
 	features: string[]
 
