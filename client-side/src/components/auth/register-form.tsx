@@ -1,8 +1,12 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Eye, EyeOff } from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
+
+import { useRegisterMutation } from '@/api/hooks'
 
 import { Button } from '../ui/button'
 import {
@@ -31,6 +35,8 @@ const registerSchema = z.object({
 export type RegisterFormValues = z.infer<typeof registerSchema>
 
 export function RegisterForm() {
+	const { mutate, isPending } = useRegisterMutation()
+
 	const form = useForm<RegisterFormValues>({
 		resolver: zodResolver(registerSchema),
 		defaultValues: {
@@ -41,13 +47,15 @@ export function RegisterForm() {
 	})
 
 	const onSubmit = (values: RegisterFormValues) => {
-		console.log(values)
+		mutate(values)
 	}
+
+	const [showPassword, setShowPassword] = useState(false)
 
 	return (
 		<AuthWrapper
 			title='Регистрация'
-			description='Для регистрации заполните форму ниже'
+			description='Для регистрации аккаунта заполните форму'
 			bottomText='Уже есть аккаунт?'
 			bottomTextLink='Войти'
 			bottomLinkHref='/auth/login'
@@ -64,7 +72,11 @@ export function RegisterForm() {
 							<FormItem>
 								<FormLabel>Имя</FormLabel>
 								<FormControl>
-									<Input placeholder='Иван' {...field} />
+									<Input
+										placeholder='Иван'
+										disabled={isPending}
+										{...field}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -79,9 +91,11 @@ export function RegisterForm() {
 								<FormControl>
 									<Input
 										placeholder='ivanivanov@example.com'
+										disabled={isPending}
 										{...field}
 									/>
 								</FormControl>
+
 								<FormMessage />
 							</FormItem>
 						)}
@@ -92,18 +106,42 @@ export function RegisterForm() {
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>Пароль</FormLabel>
-								<FormControl>
-									<Input
-										placeholder='*******'
-										type='password'
-										{...field}
-									/>
-								</FormControl>
+								<div className='relative'>
+									<FormControl>
+										<Input
+											placeholder='*******'
+											disabled={isPending}
+											type={
+												showPassword
+													? 'text'
+													: 'password'
+											}
+											{...field}
+										/>
+									</FormControl>
+									<div
+										className='absolute inset-y-0 right-0 flex cursor-pointer items-center p-2'
+										onClick={() =>
+											setShowPassword(!showPassword)
+										}
+									>
+										{showPassword ? (
+											<Eye className='text-muted-foreground h-5 w-5' />
+										) : (
+											<EyeOff className='text-muted-foreground h-5 w-5' />
+										)}
+									</div>
+								</div>
 								<FormMessage />
 							</FormItem>
 						)}
 					/>
-					<Button type='submit' size='lg' className='w-full'>
+					<Button
+						type='submit'
+						disabled={isPending}
+						size='lg'
+						className='w-full'
+					>
 						Продолжить
 					</Button>
 				</form>

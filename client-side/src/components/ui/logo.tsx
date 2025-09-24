@@ -9,15 +9,15 @@ export function Logo() {
 					src='/images/logo-dark.svg'
 					alt='Темный логотип'
 					className='dark:hidden'
-					width={100}
-					height={100}
+					width={150}
+					height={150}
 				/>
 				<Image
 					src='/images/logo-white.svg'
 					alt='Светлый логотип'
 					className='hidden dark:block'
-					width={100}
-					height={100}
+					width={150}
+					height={150}
 				/>
 			</Link>
 		</>

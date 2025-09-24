@@ -1,10 +1,12 @@
+import { QueryClientProvider } from '@tanstack/react-query'
 import type { Metadata } from 'next'
-import { ThemeProvider } from 'next-themes'
 import { Montserrat } from 'next/font/google'
 
 import { ButtonTheme } from '@/components/ui/button-theme'
 
 import './globals.css'
+import { QueryProvider } from '@/providers/query-client-provider'
+import { ThemeProvider } from '@/providers/theme-provider'
 
 const montserrat = Montserrat({
 	subsets: ['latin']
@@ -23,15 +25,17 @@ export default function RootLayout({
 	return (
 		<html lang='ru' suppressHydrationWarning>
 			<body className={`${montserrat.className} antialiased`}>
-				<ThemeProvider
-					attribute='class'
-					defaultTheme='system'
-					enableSystem
-					disableTransitionOnChange
-				>
-					{children}
-					<ButtonTheme className='fixed bottom-5 right-5 z-50' />
-				</ThemeProvider>
+				<QueryProvider>
+					<ThemeProvider
+						attribute='class'
+						defaultTheme='system'
+						enableSystem
+						disableTransitionOnChange
+					>
+						{children}
+						<ButtonTheme className='fixed right-5 bottom-5 z-50' />
+					</ThemeProvider>
+				</QueryProvider>
 			</body>
 		</html>
 	)
