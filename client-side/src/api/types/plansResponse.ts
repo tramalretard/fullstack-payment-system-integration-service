@@ -17,7 +17,7 @@ export interface PlansResponse {
   /** Monthly price */
   monthlyPrice: number;
   /** Early price */
-  earlyPrice: number;
+  yearlyPrice: number;
   /** Indicates whether the tariff plan is popular */
   isPopular: boolean;
 }

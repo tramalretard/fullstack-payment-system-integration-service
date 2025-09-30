@@ -25,7 +25,7 @@ export function AuthWrapper({
 			<div className='from-background/20 to-foreground/20 relative hidden overflow-hidden bg-gradient-to-l lg:flex lg:w-1/2'>
 				<div className='position-absolute from-background/90 to-foreground/90 inset-0 bg-gradient-to-br' />
 				<div className='relative z-10 flex h-full w-full flex-col items-center justify-center p-12'>
-					<Logo />
+					<Logo width={200} height={200} />
 				</div>
 			</div>
 			<div className='flex w-full items-center justify-center p-8 lg:w-1/2'>

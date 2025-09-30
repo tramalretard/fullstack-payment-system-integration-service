@@ -121,3 +121,17 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+::-webkit-scrollbar {
+	width: 3px;
+}
+
+::-webkit-scrollbar-track {
+	background: var(--background);
+	border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--foreground);
+	border-radius: 10px;
+}

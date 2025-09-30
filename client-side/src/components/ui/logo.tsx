@@ -1,7 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-export function Logo() {
+interface LogoProps {
+	width: number
+	height: number
+}
+
+export function Logo({ width, height }: LogoProps) {
 	return (
 		<>
 			<Link href='/'>
@@ -9,15 +14,15 @@ export function Logo() {
 					src='/images/logo-dark.svg'
 					alt='Темный логотип'
 					className='dark:hidden'
-					width={150}
-					height={150}
+					width={width}
+					height={height}
 				/>
 				<Image
 					src='/images/logo-white.svg'
 					alt='Светлый логотип'
 					className='hidden dark:block'
-					width={150}
-					height={150}
+					width={width}
+					height={height}
 				/>
 			</Link>
 		</>
