@@ -37,7 +37,7 @@ export class PlansResponse {
 		example: 20000,
 		description: 'Early price'
 	})
-	earlyPrice: number
+	yearlyPrice: number
 
 	@ApiProperty({
 		example: true,
