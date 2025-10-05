@@ -1,19 +1,23 @@
+import Image from 'next/image'
 import Link from 'next/link'
-
-import { Logo } from '../ui/logo'
 
 import { companyLinks, productLinks, supportLinks } from '@/data'
 
 export function SiteFooter() {
 	return (
-		<footer className='bg-background/80 text-foreground py-16'>
+		<footer className='text-background bg-black/90 py-16'>
 			<div className='mx-auto max-w-7xl'>
 				<div className='grid gap-8 md:grid-cols-4'>
 					<div>
 						<div className='mb-2 flex items-center gap-x-2'>
-							<Logo height={30} width={30} />
-							<span className='text-foreground text-xl font-semibold'>
-								PaymentSytems
+							<Image
+								src={'/images/logos/logo-white.svg'}
+								alt='logo'
+								width={30}
+								height={30}
+							/>
+							<span className='text-background text-xl font-semibold'>
+								Utome
 							</span>
 						</div>
 					</div>

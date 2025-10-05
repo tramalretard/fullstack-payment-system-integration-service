@@ -13,13 +13,13 @@ export default async function Home() {
 	const plans = await getAllPlans()
 
 	return (
-		<div className='from-foreground/40 to-background/40 min-h-screen bg-gradient-to-t'>
+		<>
 			<SiteHeader />
 			<HeroSection />
 			<PricingSection plans={plans} />
 			<TrustedBySection />
 			<FAQSection />
 			<SiteFooter />
-		</div>
+		</>
 	)
 }
