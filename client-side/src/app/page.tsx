@@ -1,5 +1,6 @@
 import { getAllPlans } from '@/api/requests'
 
+import { FAQSection } from '@/components/home/faq-section'
 import { HeroSection } from '@/components/home/hero-section'
 import { PricingSection } from '@/components/home/pricing-section'
 import { TrustedBySection } from '@/components/home/trusted-by-section'
@@ -16,6 +17,7 @@ export default async function Home() {
 			<HeroSection />
 			<PricingSection plans={plans} />
 			<TrustedBySection />
+			<FAQSection />
 		</div>
 	)
 }

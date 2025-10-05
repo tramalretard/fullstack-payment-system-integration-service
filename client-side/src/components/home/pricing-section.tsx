@@ -94,7 +94,7 @@ export function PricingSection({ plans }: PricingSectionProps) {
 								<Card
 									key={index}
 									className={cn(
-										'from-foreground/5 to-background/95 relative rounded-3xl bg-gradient-to-t p-8 shadow-lg backdrop-blur-sm',
+										'from-foreground/5 to-background/95 relative rounded-3xl bg-gradient-to-b p-8 shadow-lg backdrop-blur-sm',
 										plan.isPopular &&
 											'transform shadow-xl ring-1 ring-lime-500'
 									)}
