@@ -35,6 +35,8 @@ export class StripeService {
 		this.STRIPE_WEBHOOK_SECRET = this.configService.getOrThrow<string>(
 			'STRIPE_WEBHOOK_SECRET'
 		)
+
+		this.CLIENT_URL = this.configService.getOrThrow<string>('CLIENT_URL')
 	}
 
 	async create(
