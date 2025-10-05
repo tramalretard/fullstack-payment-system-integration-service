@@ -11,14 +11,14 @@ export function Logo({ width, height }: LogoProps) {
 		<>
 			<Link href='/'>
 				<Image
-					src='/images/logo-dark.svg'
+					src='/images/logos/logo-dark.svg'
 					alt='Темный логотип'
 					className='dark:hidden'
 					width={width}
 					height={height}
 				/>
 				<Image
-					src='/images/logo-white.svg'
+					src='/images/logos/logo-white.svg'
 					alt='Светлый логотип'
 					className='hidden dark:block'
 					width={width}

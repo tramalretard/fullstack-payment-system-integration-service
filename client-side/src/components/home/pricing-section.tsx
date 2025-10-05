@@ -94,7 +94,7 @@ export function PricingSection({ plans }: PricingSectionProps) {
 								<Card
 									key={index}
 									className={cn(
-										'bg-background relative rounded-3xl p-8 shadow-lg backdrop-blur-sm',
+										'from-foreground/5 to-background/95 relative rounded-3xl bg-gradient-to-t p-8 shadow-lg backdrop-blur-sm',
 										plan.isPopular &&
 											'transform shadow-xl ring-1 ring-lime-500'
 									)}
@@ -149,7 +149,7 @@ export function PricingSection({ plans }: PricingSectionProps) {
 									</div>
 
 									<div className='space-y-4'>
-										<h4 className='text-background mb-4 font-semibold'>
+										<h4 className='text-foreground mb-4 font-semibold'>
 											В тарифный план входит:
 										</h4>
 
