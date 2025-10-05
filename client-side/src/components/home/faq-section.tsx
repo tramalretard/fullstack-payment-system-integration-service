@@ -12,7 +12,7 @@ export function FAQSection() {
 
 	return (
 		<section className='py-20'>
-			<div className='mx-auto max-w-5xl'>
+			<div className='mx-auto max-w-6xl'>
 				<div className='mb-12 text-center'>
 					<h2 className='text-foreground mb-4 text-3xl font-bold'>
 						Часто задаваемые вопросы
@@ -23,7 +23,7 @@ export function FAQSection() {
 					{faqs.map((faq, index) => (
 						<div
 							key={index}
-							className='bg-background/20 rounded-2xl bg-gradient-to-tr shadow-sm'
+							className='bg-background/20 rounded-2xl shadow-sm'
 						>
 							<button
 								onClick={() =>
@@ -46,7 +46,7 @@ export function FAQSection() {
 
 							{openIndex === index && (
 								<div className='px-8 pt-4 pb-6'>
-									<p className='text-muted-background'>
+									<p className='text-foreground/70'>
 										{faq.answer}
 									</p>
 								</div>
