@@ -4,16 +4,34 @@ import { CheckIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-import { type PlansResponse } from '@/api/types'
+import { useGetMeQuery } from '@/api/hooks'
+import {
+	InitPaymentRequestBillingPeriod,
+	type PlansResponse,
+	SubscriptionResponseStatus
+} from '@/api/types'
 
 import { cn } from '@/lib/utils'
 
 import { LayoutIconOne } from '../icons/layout-icon-one'
 import { LayoutIconThree } from '../icons/layout-icon-three'
 import { LayoutIconTwo } from '../icons/layout-icon-two'
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle
+} from '../ui/alert-dialog'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
 import { Switch } from '../ui/switch'
+
+import { PaymentModal } from './payment-modal'
+import { useAuth } from '@/hooks'
 
 export const icons = {
 	Начальный: <LayoutIconOne className='size-9' />,
@@ -29,6 +47,47 @@ export function PricingSection({ plans }: PricingSectionProps) {
 	const router = useRouter()
 
 	const [isYearly, setIsYearly] = useState(false)
+
+	const [selectedPlan, setSelectedPlan] = useState<PlansResponse | null>(null)
+	const [pendingPlan, setPendingPlan] = useState<PlansResponse | null>(null)
+
+	const [isPaymentOpen, setIsPaymentOpen] = useState(false)
+	const [isConfirmReplaceOpen, setIsConfirmReplaceOpen] = useState(false)
+
+	const { isAuthorized } = useAuth()
+	const { data: user, isLoading } = useGetMeQuery()
+
+	const hasActiveSubscription =
+		isAuthorized &&
+		!isLoading &&
+		user?.subscription &&
+		user.subscription.status === SubscriptionResponseStatus.ACTIVE
+
+	const isSamePlan = (planId: string) =>
+		user?.subscription?.plan.id === planId
+
+	const handleGetStarted = (plan: PlansResponse) => {
+		if (!isAuthorized) return router.push('/auth/login')
+
+		if (hasActiveSubscription && !isSamePlan(plan.id)) {
+			setPendingPlan(plan)
+			setIsConfirmReplaceOpen(true)
+
+			return
+		}
+
+		setSelectedPlan(plan)
+		setIsPaymentOpen(true)
+	}
+
+	const confirmPlanReplace = () => {
+		if (!pendingPlan) return
+
+		setSelectedPlan(pendingPlan)
+
+		setIsPaymentOpen(true)
+		setIsConfirmReplaceOpen(false)
+	}
 
 	const calculateYearlyDiscount = (
 		monthlyPrice: number,
@@ -90,6 +149,19 @@ export function PricingSection({ plans }: PricingSectionProps) {
 								? Math.round(plan.yearlyPrice / 12)
 								: plan.monthlyPrice
 
+							const isCurrentPlan = isSamePlan(plan.id)
+
+							const buttonText = !isAuthorized
+								? 'Выбрать тариф'
+								: isLoading
+									? 'Загрузка...'
+									: hasActiveSubscription && isCurrentPlan
+										? 'Продлить подписку'
+										: hasActiveSubscription &&
+											  !isCurrentPlan
+											? 'Переключиться'
+											: 'Выбрать тариф'
+
 							return (
 								<Card
 									key={index}
@@ -143,8 +215,14 @@ export function PricingSection({ plans }: PricingSectionProps) {
 											)}
 										</div>
 
-										<Button size='lg' className='w-full'>
-											Продолжить
+										<Button
+											size='lg'
+											className='w-full'
+											onClick={() =>
+												handleGetStarted(plan)
+											}
+										>
+											{buttonText}
 										</Button>
 									</div>
 
@@ -173,6 +251,50 @@ export function PricingSection({ plans }: PricingSectionProps) {
 					</div>
 				</div>
 			</section>
+
+			{selectedPlan && (
+				<PaymentModal
+					isOpen={isPaymentOpen}
+					onClose={() => setIsPaymentOpen(false)}
+					plan={selectedPlan}
+					price={
+						isYearly
+							? selectedPlan?.yearlyPrice
+							: selectedPlan?.monthlyPrice
+					}
+					billingPeriod={
+						isYearly
+							? InitPaymentRequestBillingPeriod.YEARLY
+							: InitPaymentRequestBillingPeriod.MONTHLY
+					}
+				/>
+			)}
+
+			<AlertDialog
+				open={isConfirmReplaceOpen}
+				onOpenChange={setIsConfirmReplaceOpen}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Смена тарифа</AlertDialogTitle>
+						<AlertDialogDescription>
+							У Вас активна подписка до{' '}
+							{new Date(
+								user?.subscription?.endDate || ''
+							).toLocaleDateString()}{' '}
+							на тарифный план{' '}
+							<b>{user?.subscription?.plan?.title}</b>. Вы
+							уверены, что хотите сменить тариф?
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Отмена</AlertDialogCancel>
+						<AlertDialogAction onClick={confirmPlanReplace}>
+							Продолжить
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</>
 	)
 }
