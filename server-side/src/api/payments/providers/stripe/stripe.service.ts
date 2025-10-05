@@ -55,7 +55,7 @@ export class StripeService {
 				'Идентификатор тарифного плана в STRIPE не найден'
 			)
 
-		const successUrl = `${this.CLIENT_URL}/payments/${transaction.id}`
+		const successUrl = `${this.CLIENT_URL}/payments/${transaction.id}/success`
 		const cancelUrl = `${this.CLIENT_URL}`
 
 		let customerId = user.stripeCustomerId

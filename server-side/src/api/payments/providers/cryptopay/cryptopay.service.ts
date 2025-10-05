@@ -34,7 +34,7 @@ export class CryptopayService {
 	}
 
 	async create(plan: Plan, transaction: Transaction) {
-		const successUrl = `${this.CLIENT_URL}/payments/${transaction.id}`
+		const successUrl = `${this.CLIENT_URL}/payments/${transaction.id}/success`
 
 		const payload: CreateInvoiceRequest = {
 			amount: transaction.amount,
