@@ -44,6 +44,7 @@ export class PaymentsController {
 	@ApiOkResponse({
 		type: PaymentDetailsResponse
 	})
+	@Get(':id')
 	async getById(@Param('id') id: string) {
 		return await this.paymentsService.getById(id)
 	}
