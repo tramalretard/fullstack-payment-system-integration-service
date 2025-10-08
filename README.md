@@ -1,10 +1,10 @@
 
 <br>  
 <p align="center">  
-<img src="./client-side/public/images/logos/logo-for-readme.svg" alt="Utome logo" width="100"/>
+<img src="./client-side/public/images/logos/logo-for-readme.svg" alt="Utome logo" width="270"/>
 </p>  
 <p align="center">  
-Фуллстек-проект тарифных планов, демонстрирующий интеграцию платежных систем <b>ЮKassa</b>, <b>Stripe</b> и <b>Crypto Pay</b>.  
+Фуллстек-проект с тарифными планами, с интеграцией платежных систем <b>ЮKassa</b>, <b>Stripe</b> и <b>Crypto Pay</b>.  
 </p>  
 
 ## Ключевые возможности
@@ -181,7 +181,7 @@ yarn start:dev
     
 2.  **Запустите фронтенд-приложение** (из директории client-side):
 ```
- bun run dev
+bun run dev
 ```      
     
  Приложение будет доступно по адресу http://localhost:3000.
