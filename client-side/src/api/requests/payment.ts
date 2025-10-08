@@ -6,7 +6,7 @@ import type {
 	PaymentHistoryResponse
 } from '../types'
 
-export const getPaymentHistory = async () =>
+export const getPaymentHistory = async (id: string) =>
 	await instance
 		.get<PaymentHistoryResponse[]>('/payments')
 		.then(res => res.data)
