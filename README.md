@@ -1,10 +1,10 @@
 
 <br>  
 <p align="center">  
-<img src="./client-side/public/images/logos/logo-white.svg" alt="Utome logo" width="100"/> 
+<img src="./client-side/public/images/logos/logo-for-readme.svg" alt="Utome logo" width="100"/>
 </p>  
 <p align="center">  
-Фуллстек-проект, демонстрирующий интеграцию платежных систем <b>ЮKassa</b>, <b>Stripe</b> и <b>Crypto Pay</b>.  
+Фуллстек-проект тарифных планов, демонстрирующий интеграцию платежных систем <b>ЮKassa</b>, <b>Stripe</b> и <b>Crypto Pay</b>.  
 </p>  
 
 ## Ключевые возможности
@@ -205,5 +205,5 @@ yarn start:dev
 - bun dev — запуск приложения в режиме разработки.
 - bun build — сборка проекта для продакшена.
 - bun start — запуск продакшн-сборки.
-- bun generate - генерация API-клиента из Swagger-схемы.
+- bun generate — генерация API-клиента из Swagger-схемы.
 - bun lint — проверка кода.
