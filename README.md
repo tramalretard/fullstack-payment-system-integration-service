@@ -1,7 +1,7 @@
 
 <br>  
 <p align="center">  
-<img src="./client-side/public/images/logos/logo-white.svg" alt="Utome logo" width="270"/> 
+<img src="./client-side/public/images/logos/logo-white.svg" alt="Utome logo" width="100"/> 
 </p>  
 <p align="center">  
 Фуллстек-проект, демонстрирующий интеграцию платежных систем <b>ЮKassa</b>, <b>Stripe</b> и <b>Crypto Pay</b>.  
@@ -21,7 +21,7 @@
     
 -   **Фоновые задачи**: Использование очередей BullMQ для обработки отложенных и ресурсоемких операций, не блокируя основной поток приложения.
     
--   **API-документация**:  API задукоментирован через Swagger.
+-   **API-документация**:  Документация API с помощью Swagger.
     
 
 ## Стек технологий
@@ -113,83 +113,78 @@
 
 ### **Шаг 1: Клонирование репозитория**
 
-
-
     git clone https://github.com/tramalretard/fullstack-payment-system-integration-service.git
     cd fullstack-payment-system-integration-service`
   
 
 ### **Шаг 2: Настройка бэкенда**
 
-1.  Перейдите в директорию server-side.
+1. Перейдите в директорию серверной части.
+```
+cd server-side
+```
+2. Создайте файл .env на основе примера.
+```
+cp .env.example .env
+```
+3. Заполните переменные окружения в файле .env своими данными (ключи API платежных систем, данные для подключения к БД и Redis, JWT-секреты).
+```
+POSTGRES_USER="your_user"
+JWT_SECRET="your_jwt_secret"
+... и другие переменные
+```
+4. Запустите контейнеры с PostgreSQL и Redis с помощью Docker.
+```
+docker-compose up -d
+```
     
-        cd server-side
-        
-2.  Создайте файл .env на основе примера.
+5. Установите зависимости с помощью Yarn.
+```
+yarn install
+``` 
     
-        cp .env.example .env
+6. Примените миграции базы данных для создания таблиц.
+```
+npx prisma migrate dev
+``` 
       
-3.  **Заполните переменные окружения** в файле .env вашими данными (ключи API платежных систем, данные для подключения к БД и Redis, JWT-секреты).
-    
-4.  Запустите контейнеры с PostgreSQL и Redis с помощью Docker.
-    
-        docker-compose up -d
-      
-    
-5.  Установите зависимости.
-    
-        yarn install
-      
-    
-6.  Примените миграции базы данных для создания таблиц.
-    
-        npx prisma migrate dev
-      
-    
-7.  Заполните базу данных тестовыми данными (тарифные планы).
-    
-        yarn run db:seed
+7. Заполните базу данных тестовыми данными (тарифные планы).
+```
+yarn run db:seed
+``` 
       
     
 
 ### **Шаг 3: Настройка фронтенда**
 
-1.  В **новом окне терминала** перейдите в директорию client-side.
+1. В **новом окне терминала** перейдите в директорию клиентской части.
+```
+cd client-side
+```
     
-        cd client-side
-      
-    
-2.  Создайте файл .env на основе примера и укажите URL вашего бэкенда.
-
-        cp .env.example .env
-      
-    
-    Содержимое .env:
-
-    
-        NEXT_PUBLIC_API_URL=http://localhost:YOUR_SERVER_PORT
-      
-    
-3.  Установите зависимости.
-
-        bun install
+2. Создайте файл .env на основе примера и укажите заполните  переменные окружения.
+```
+cp .env.example .env
+```
+3. Установите зависимости с помощью Bun.
+```
+bun install
+```
 
 ### **Шаг 4: Запуск приложения**
 
 1.  **Запустите бэкенд-сервер** (из директории server-side):
-
-        yarn start:dev
-      
-    
-    Сервер будет доступен по адресу http://localhost:4000.
+```
+yarn start:dev
+```      
+   Сервер будет доступен по адресу http://localhost:4000.
     
 2.  **Запустите фронтенд-приложение** (из директории client-side):
-
+```
+ bun run dev
+```      
     
-        bun run dev
-      
-    
-    Приложение будет доступно по адресу http://localhost:3000.
+ Приложение будет доступно по адресу http://localhost:3000.
     
 
 ## Документация API
@@ -198,60 +193,17 @@
 
 [http://localhost:4000/docs](https://www.google.com/url?sa=E&q=http://localhost:4000/docs)
 
-## Основные скрипты
-
-### **Backend (server-side)**
-
-Скрипт
-
-Описание
-
-npm run start:dev
-
-Запуск сервера в режиме разработки с hot-reload.
-
-npm run build
-
-Сборка production-версии приложения.
-
-npm run start:prod
-
-Запуск production-сборки.
-
-npm run db:seed
-
-Заполнение БД начальными данными (тарифные планы).
-
-npm run lint
-
-Проверка кода с помощью ESLint.
-
-npm test
-
-Запуск unit-тестов.
-
-### **Frontend (client-side)**
-
-Скрипт
-
-Описание
-
-npm run dev
-
-Запуск приложения в режиме разработки с Turbopack.
-
-npm run build
-
-Сборка production-версии приложения.
-
-npm run start
-
-Запуск production-сборки.
-
-npm run generate
-
-Генерация API-клиента из Swagger-схемы.
-
-npm run lint
-
-Проверка кода с помощью ESLint.
+## **Доступные скрипты**
+### **Backend** **(в качестве пакетного менеджера используется Yarn)**
+- yarn start:dev — запуск сервера в режиме разработки.
+- yarn build — сборка проекта для продакшена.
+- yarn start:prod — сборка проекта для продакшена.
+- yarn db:seed — заполнение БД тестовыми данными.
+- yarn format — форматирование кода.
+- yarn lint — проверка кода.
+### **Frontend** **(в качестве пакетного менеджера используется Bun)**
+- bun dev — запуск приложения в режиме разработки.
+- bun build — сборка проекта для продакшена.
+- bun start — запуск продакшн-сборки.
+- bun generate - генерация API-клиента из Swagger-схемы.
+- bun lint — проверка кода.
